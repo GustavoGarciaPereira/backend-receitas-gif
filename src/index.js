@@ -4,8 +4,11 @@ const axios = require('axios');
 //require('dotenv').config()
 
 const app = express();
-app.get('/', async(req,res)=>{
-    res.status(200).json(await formatReceitas())
+app.get('/:ingredient_1/:ingredient_2', async(req,res)=>{
+    console.log(req.params['ingredient_1'])
+    console.log(req.params['ingredient_2'])
+    
+    res.status(200).json(await formatReceitas(req.params['ingredient_1'],req.params['ingredient_2']))
 })
 
 /**
@@ -18,9 +21,9 @@ app.get('/', async(req,res)=>{
 
  */
 
-async function formatReceitas() {
+async function formatReceitas(pri,segun) {
     try {
-        const receitas = await getReceitas()
+        const receitas = await getReceitas(pri,segun)
 
         const receitas_form = receitas.map((x)=>{
             return{
@@ -36,9 +39,9 @@ async function formatReceitas() {
     }
 }
 
-async function getReceitas() {
+async function getReceitas(pri,segun) {
     try {
-      const response = await axios.get('http://www.recipepuppy.com/api/?i=tomato,onion&q=omelet&p=3');
+      const response = await axios.get(`http://www.recipepuppy.com/api/?i='${pri}',${segun}`);
       return response.data.results
     } catch (error) {
       console.error(error);
