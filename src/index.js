@@ -1,53 +1,42 @@
 const express = require('express')
-const axios = require('axios');
 
-//require('dotenv').config()
+const receita  = require('./receitas.js');
+const gif = require('./gif.js');
+
+require('dotenv').config()
+
+
 
 const app = express();
-app.get('/:ingredient_1/:ingredient_2', async(req,res)=>{
-    console.log(req.params['ingredient_1'])
-    console.log(req.params['ingredient_2'])
+
+app.get('/', async(req,res)=>{
     
-    res.status(200).json(await formatReceitas(req.params['ingredient_1'],req.params['ingredient_2']))
+    res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <img src="https://56e9af4bb89f1d73465cbd39.static-01.com/l/images/71e43d1c3c5d4fcbefa1e1c71d31cf6f1aa3337c.jpg">
+    </body>
+    </html>
+    `)
 })
 
-/**
- {
-    title: 'Garlicky Mushroom Masala Omelet',
-    href: 'http://www.recipezaar.com/Garlicky-Mushroom-Masala-Omelet-306233',
-    ingredients: 'tomato, cilantro, eggs, ginger, garlic, green chilies, mushroom, mustard seed, black pepper, salt, green onion, vegetable oil',
-    thumbnail: 'http://img.recipepuppy.com/215908.jpg'
-  },
 
- */
+app.get('/:ingredient_1/:ingredient_2', async(req,res)=>{
+    
+    res.status(200).json(await receita.getReceitas(req.params))
+})
 
-async function formatReceitas(pri,segun) {
-    try {
-        const receitas = await getReceitas(pri,segun)
+app.get('/gif/', async(req,res)=>{
+    
+    res.status(200).json(await gif.getGif())
+})
 
-        const receitas_form = receitas.map((x)=>{
-            return{
-                "titulo":x.title,
-                "link":x.href,
-                "ingredientes":x.ingredients,
-                "thumbnail":x.thumbnail
-            }
-        })
-      return receitas_form
-    } catch (error) {
-      console.error(error);
-    }
-}
-
-async function getReceitas(pri,segun) {
-    try {
-      const response = await axios.get(`http://www.recipepuppy.com/api/?i='${pri}',${segun}`);
-      return response.data.results
-    } catch (error) {
-      console.error(error);
-    }
-}
-
-app.listen('3001',()=>{
+app.listen(process.env.PORT_API,()=>{
     console.log("ouvindo")
 })
