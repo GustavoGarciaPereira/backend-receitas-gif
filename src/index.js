@@ -1,11 +1,10 @@
 const express = require('express')
 
+const core = require('./core.js')
 const receita  = require('./receitas.js');
 const gif = require('./gif.js');
 
 require('dotenv').config()
-
-
 
 const app = express();
 
@@ -25,16 +24,8 @@ app.get('/', async(req,res)=>{
     </html>
     `)
 })
-
-
 app.get('/:ingredient_1/:ingredient_2', async(req,res)=>{
-    
-    res.status(200).json(await receita.getReceitas(req.params))
-})
-
-app.get('/gif/', async(req,res)=>{
-    
-    res.status(200).json(await gif.getGif())
+    res.status(200).json(await core.core(req.params))
 })
 
 app.listen(process.env.PORT_API,()=>{
